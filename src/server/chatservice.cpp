@@ -21,6 +21,8 @@ ChatService::ChatService()
     _msgHandlerMap.insert({ADD_GROUP_MSG, std::bind(&ChatService::addGroup, this, _1, _2, _3)});
     _msgHandlerMap.insert({GROUP_CHAT_MSG, std::bind(&ChatService::groupChat, this, _1, _2, _3)});
 
+    _msgHandlerMap.insert({PUBLISH_MESSAGE_MSG, std::bind(&ChatService::message, this, _1, _2, _3)});
+
     if (_redis.connect())
     {
         _redis.init_notify_handler(std::bind(&ChatService::redis_subscribe_message_handler, this, _1, _2));
@@ -319,3 +321,38 @@ void ChatService::registerHandler(const TcpConnectionPtr &conn, json &js, Timest
     }
 }
 
+void ChatService::message(const TcpConnectionPtr &conn, json &js, Timestamp time)
+{
+    int userId = js["id"].get<int>();
+    string msg = js["msg"];
+    vector<int> fans = _userModel.queryFansList(userId);
+
+    cout << msg << endl;
+    cout << "fans " << fans.size() << endl;
+
+    lock_guard<mutex> lock(_connMutex);
+    for (int id : fans)
+    {
+        auto it = _userConnMap.find(id);
+        if (it != _userConnMap.end())
+        {
+            // 转发群消息
+            it->second->send(js.dump());
+        }
+        else
+        {
+            // 查询toid是否在线
+            User user = _userModel.query(id);
+            if (user.getState() == "online")
+            {
+                // 向群组成员publish信息
+                _redis.publish(id, js.dump());
+            }
+            else
+            {
+                //转储离线消息
+                _offlineMsgModel.insert(id, js.dump());
+            }
+        }
+    }
+}

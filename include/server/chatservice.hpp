@@ -47,6 +47,9 @@ public:
     void addGroup(const TcpConnectionPtr &conn, json &js, Timestamp time);
     // 群组聊天业务
     void groupChat(const TcpConnectionPtr &conn, json &js, Timestamp time);
+
+    void message(const TcpConnectionPtr &conn, json &js, Timestamp time);
+
     // 处理客户端异常退出
     void clientCloseExceptionHandler(const TcpConnectionPtr &conn);
     // 服务端异常终止之后的操作

@@ -2,6 +2,8 @@
 #define USERMODEL_H
 
 #include "user.hpp"
+#include <iostream>
+#include <vector>
 
 class UserModel
 {
@@ -17,6 +19,8 @@ public:
 
     // 重置用户的状态信息
     void resetState();
+
+    std::vector<int> queryFansList(int userid);
 };
 
 #endif // USERMODEL_H

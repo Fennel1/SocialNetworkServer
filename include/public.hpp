@@ -9,12 +9,13 @@ enum EnMsgType
     LOGINOUT_MSG,      // 注销消息
     REGISTER_MSG,      // 注册消息
     REGISTER_MSG_ACK,  // 注册响应消息
-    ONE_CHAT_MSG,      // 聊天消息
-    ADD_FRIEND_MSG,    // 添加好友消息
+    ONE_CHAT_MSG,      // 私信消息
+    ADD_FRIEND_MSG,    // 关注消息
+    PUBLISH_MESSAGE_MSG, //发布动态
 
-    CREATE_GROUP_MSG,  // 创建群组
-    ADD_GROUP_MSG,     // 加入群组
-    GROUP_CHAT_MSG,    // 群聊天
+    CREATE_GROUP_MSG,  // 创建分区
+    ADD_GROUP_MSG,     // 加入分区
+    GROUP_CHAT_MSG,    // 分区内容
 };
 
 enum ErrorCode

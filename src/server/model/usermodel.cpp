@@ -1,6 +1,6 @@
 #include "usermodel.hpp"
 #include "db.h"
-#include <iostream>
+
 
 bool UserModel::insert(User& user)
 {
@@ -89,4 +89,25 @@ void UserModel::resetState()
     {
         mysql.update(sql);
     }
+}
+
+vector<int> UserModel::queryFansList(int userid){
+    char sql[1024] = {0};
+    snprintf(sql, sizeof(sql), "select userid from friend where friendid = %d", userid);
+
+    MySQL mysql;
+    vector<int> vec;
+    if (mysql.connect())
+    {
+        MYSQL_RES *res = mysql.query(sql);
+        if (res != nullptr)
+        {
+            MYSQL_ROW row = mysql_fetch_row(res);
+            if (row != nullptr)
+            {
+                vec.push_back(atoi(row[0]));
+            }
+        }
+    }
+    return vec;
 }
