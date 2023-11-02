@@ -22,6 +22,7 @@ ChatService::ChatService()
     _msgHandlerMap.insert({GROUP_CHAT_MSG, std::bind(&ChatService::groupChat, this, _1, _2, _3)});
 
     _msgHandlerMap.insert({PUBLISH_MESSAGE_MSG, std::bind(&ChatService::message, this, _1, _2, _3)});
+    _msgHandlerMap.insert({NEW_MSG, std::bind(&ChatService::newmsg, this, _1, _2, _3)});
 
     if (_redis.connect())
     {
@@ -171,6 +172,8 @@ void ChatService::groupChat(const TcpConnectionPtr &conn, json &js, Timestamp ti
     int userId = js["id"].get<int>();
     int groupId = js["groupid"].get<int>();
     std::vector<int> userIdVec = _groupModel.queryGroupUsers(userId, groupId);
+
+    _groupModel.addMessage(userId, groupId, js["msg"]);
 
     lock_guard<mutex> lock(_connMutex);
     for (int id : userIdVec)
@@ -355,4 +358,18 @@ void ChatService::message(const TcpConnectionPtr &conn, json &js, Timestamp time
             }
         }
     }
+}
+
+void ChatService::newmsg(const TcpConnectionPtr &conn, json &js, Timestamp time)
+{
+    int userId = js["id"].get<int>();
+    Msg msg = _userModel.queryMsg(userId);
+
+    json response;
+    response["msgid"] = NEW_MSG;
+    response["userid"] = msg.getUsrId();
+    response["groupid"] = msg.getGroupId();
+    response["msg"] = msg.getText();
+
+    conn->send(response.dump());
 }

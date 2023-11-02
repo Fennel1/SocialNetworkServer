@@ -12,6 +12,7 @@ enum EnMsgType
     ONE_CHAT_MSG,      // 私信消息
     ADD_FRIEND_MSG,    // 关注消息
     PUBLISH_MESSAGE_MSG, //发布动态
+    NEW_MSG,            //内容推荐
 
     CREATE_GROUP_MSG,  // 创建分区
     ADD_GROUP_MSG,     // 加入分区

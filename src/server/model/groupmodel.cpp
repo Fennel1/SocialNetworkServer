@@ -122,3 +122,19 @@ std::vector<int> GroupModel::queryGroupUsers(int userid, int groupid)
     }
     return idVec;  
 }
+
+bool GroupModel::addMessage(int userid, int groupid, std::string msg){
+    char sql[1024] = {0};
+    sprintf(sql, "insert into allmessage(userid, groupid, message) values(%d, %d, '%s')", userid, groupid, msg.c_str());
+
+    MySQL mysql;
+    if (mysql.connect())
+    {
+        if (mysql.update(sql))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}

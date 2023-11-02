@@ -2,6 +2,7 @@
 #define USERMODEL_H
 
 #include "user.hpp"
+#include "msg.hpp"
 #include <iostream>
 #include <vector>
 
@@ -21,6 +22,8 @@ public:
     void resetState();
 
     std::vector<int> queryFansList(int userid);
+
+    Msg queryMsg(int userid);
 };
 
 #endif // USERMODEL_H

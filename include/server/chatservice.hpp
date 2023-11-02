@@ -12,6 +12,7 @@
 #include "friendmodel.hpp"
 #include "group_model.hpp"
 #include "redis.hpp"
+#include "msg.hpp"
 
 using json = nlohmann::json;
 using namespace muduo;
@@ -49,6 +50,7 @@ public:
     void groupChat(const TcpConnectionPtr &conn, json &js, Timestamp time);
 
     void message(const TcpConnectionPtr &conn, json &js, Timestamp time);
+    void newmsg(const TcpConnectionPtr &conn, json &js, Timestamp time);
 
     // 处理客户端异常退出
     void clientCloseExceptionHandler(const TcpConnectionPtr &conn);

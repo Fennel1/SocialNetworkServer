@@ -335,6 +335,11 @@ void readTaskHandler(int clientfd)
             continue;
         }
 
+        if (NEW_MSG == msgtype){
+            cout << "内容推荐" << " [" << js["userid"] << "]" << js["groupid"]
+                 << " said: " << js["msg"].get<string>() << endl;
+        }
+
         if (LOGIN_MSG_ACK == msgtype)
         {
             cout << "LOGIN_MSG_ACK" << endl;
@@ -397,6 +402,7 @@ void groupchat(int, string);
 void loginout(int, string);
 
 void message(int, string);
+void newmsg(int, string);
 
 // 系统支持的客户端命令列表
 unordered_map<string, string> commandMap = {
@@ -406,6 +412,7 @@ unordered_map<string, string> commandMap = {
     {"creategroup", "创建分区，格式creategroup:groupname:groupdesc"},
     {"addgroup", "加入分区，格式addgroup:groupid"},
     {"groupchat", "分区发布内容，格式groupchat:groupid:message"},
+    {"new", "内容推荐，格式n"},
     {"message", "发布动态，格式message:message"},
     {"loginout", "注销，格式loginout"}};
 
@@ -418,6 +425,7 @@ unordered_map<string, function<void(int, string)>> commandHandlerMap = {
     {"addgroup", addgroup},
     {"groupchat", groupchat},
     {"message", message},
+    {"n", newmsg},
     {"loginout", loginout}};
 
 // 主聊天页面程序
@@ -601,6 +609,20 @@ void message(int clientfd, string str){
     js["id"] = g_currentUser.getId();
     js["name"] = g_currentUser.getName();
     js["msg"] = str;
+    js["time"] = getCurrentTime();
+    string buffer = js.dump();
+    int len = send(clientfd, buffer.c_str(), strlen(buffer.c_str()) + 1, 0);
+    if (-1 == len)
+    {
+        cerr << "send message msg error -> " << buffer << endl;
+    }
+}
+
+void newmsg(int clientfd, string str){
+    json js;
+    js["msgid"] = NEW_MSG;
+    js["id"] = g_currentUser.getId();
+    js["name"] = g_currentUser.getName();
     js["time"] = getCurrentTime();
     string buffer = js.dump();
     int len = send(clientfd, buffer.c_str(), strlen(buffer.c_str()) + 1, 0);

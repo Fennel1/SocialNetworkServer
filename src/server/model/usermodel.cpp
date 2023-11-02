@@ -1,4 +1,5 @@
 #include "usermodel.hpp"
+#include "msg.hpp"
 #include "db.h"
 
 
@@ -110,4 +111,27 @@ vector<int> UserModel::queryFansList(int userid){
         }
     }
     return vec;
+}
+
+Msg UserModel::queryMsg(int userid){
+    char sql[1024] = {0};
+    snprintf(sql, sizeof(sql), "select userid, groupid, message from allmessage where userid != %d ORDER BY RAND() LIMIT 1", userid);
+
+    MySQL mysql;
+    Msg msg;
+    if (mysql.connect())
+    {
+        MYSQL_RES *res = mysql.query(sql);
+        if (res != nullptr)
+        {
+            MYSQL_ROW row = mysql_fetch_row(res);
+            if (row != nullptr)
+            {
+                msg.setUserId(atoi(row[0]));
+                msg.setGroupId(atoi(row[1]));
+                msg.setText(row[2]);
+            }
+        }
+    }
+    return msg;
 }
